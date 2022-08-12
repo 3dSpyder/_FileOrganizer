@@ -2,12 +2,14 @@
 # Initial functionality will include moving files to a folder matching the file extension.
 
 # Initial Template was taken from https://usefulscripting.network/powershell/powershell-sorting-files/
-
-function Sort_Files {
+Write-Host "Debug Point A"
+function FileOragnizer {
+    [CmdletBinding()]
     param (
         [Parameter(Mandatory=$false)]
         [string]$cwd = (Get-Location).path
     )
+    Write-Host "Debug Point B"
 
     # Collect the extensions of the files in the folder path
     $ext_container = Get-ChildItem $cwd -File | Select-Object Extension
@@ -52,3 +54,5 @@ function Sort_Files {
         Write-Host "No files to sort here: $cwd"
     }
 }
+
+FileOragnizer -cwd $env:USERPROFILE\downloads
