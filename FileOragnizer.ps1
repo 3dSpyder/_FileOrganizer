@@ -6,7 +6,7 @@
 function Sort_Files {
     param (
         [Parameter(Mandatory=$false)]
-        [string]$cwd = (Get)
+        [string]$cwd = (Get-Location).path
     )
 }
 
@@ -28,4 +28,27 @@ foreach($folder in $ext_container){
     [System.IO.Directory]::CreateDirectory("$cwd\\$($folder.Extension)") | Out-Null
 
     $extensions.Add($folder.Extension)
+}
+
+if($extensions.Count -gt 0){
+    # Start moving files around
+    foreach($file in $files){
+        try {
+            # Status Message to user
+            Write-Host "Moving $($file) to folder: $cwd\\$($file.Extension)"
+
+            # If a file already exists in the target location or is in use, Stop so that
+            # we can catch the error.
+            Move-Item $file.FullName -Destination "$cwd\\$($file.Extension)" -Force -ErrorAction Stop
+        }
+        catch {
+            Write-Warning "Failed to move '$file' to folder '$($file.Extension)'. File already exists or in-use."
+
+        }
+    }
+    # Summary
+    Write-Host " Summary of file sorting operation:"
+    $extensions | Group-Object -NoElement | Sort-Object Count -Descending
+}else {
+    Write-Host "No files to sort here: $cwd"
 }
